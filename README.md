@@ -55,6 +55,14 @@ bash
 ```
 pip install pandas numpy scikit-learn
 ```
+![WhatsApp Image 2026-03-09 at 16 53 19](https://github.com/user-attachments/assets/d7a63f08-0fae-4621-a672-083b56c04327)
+![WhatsApp Image 2026-03-09 at 16 53 19 (1)](https://github.com/user-attachments/assets/af9eb1b4-b562-4dd3-850a-8520ce0cc488)
+![WhatsApp Image 2026-03-09 at 16 53 19 (2)](https://github.com/user-attachments/assets/5ee2ad89-262c-4267-b8ec-545abbc93eb3)
+![WhatsApp Image 2026-03-09 at 16 53 19 (3)](https://github.com/user-attachments/assets/0f54fa4c-25c5-414e-9c61-728dee226f42)
+
+
+
+
 📁 Project Structure
 
 ```
