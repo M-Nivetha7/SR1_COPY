@@ -1,4 +1,3 @@
-markdown
 # 🌌 SDSS SkyServer ML Classification
 
 A machine learning project to classify celestial objects (Stars, Galaxies, and Quasars) using Random Forest Classifier.
