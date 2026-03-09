@@ -1,0 +1,146 @@
+{
+  "project_info": {
+    "name": "SDSS SkyServer Astronomical Classification",
+    "description": "Realistic classification with regularization to prevent overfitting",
+    "dataset_size": 2000,
+    "features": [
+      "ra",
+      "dec",
+      "u",
+      "g",
+      "r",
+      "i",
+      "z",
+      "redshift"
+    ],
+    "classes": [
+      "GALAXY",
+      "QSO",
+      "STAR"
+    ],
+    "class_counts": {
+      "STAR": 864,
+      "GALAXY": 827,
+      "QSO": 309
+    }
+  },
+  "model_info": {
+    "algorithm": "Random Forest Classifier (Regularized)",
+    "n_estimators": 100,
+    "max_depth": 10,
+    "min_samples_split": 10,
+    "test_size": 0.2
+  },
+  "performance": {
+    "training_accuracy": 0.866875,
+    "testing_accuracy": 0.85,
+    "accuracy_gap": 0.016874999999999973,
+    "classification_report": {
+      "GALAXY": {
+        "precision": 0.8,
+        "recall": 0.8484848484848485,
+        "f1-score": 0.8235294117647058,
+        "support": 165.0
+      },
+      "QSO": {
+        "precision": 0.8833333333333333,
+        "recall": 0.8548387096774194,
+        "f1-score": 0.8688524590163934,
+        "support": 62.0
+      },
+      "STAR": {
+        "precision": 0.8909090909090909,
+        "recall": 0.8497109826589595,
+        "f1-score": 0.8698224852071006,
+        "support": 173.0
+      },
+      "accuracy": 0.85,
+      "macro avg": {
+        "precision": 0.8580808080808081,
+        "recall": 0.8510115136070757,
+        "f1-score": 0.8540681186627334,
+        "support": 400.0
+      },
+      "weighted avg": {
+        "precision": 0.8522348484848484,
+        "recall": 0.85,
+        "f1-score": 0.8505762383525531,
+        "support": 400.0
+      }
+    }
+  },
+  "feature_importance": {
+    "ra": 0.03159200266817262,
+    "dec": 0.0350399088042769,
+    "u": 0.035712607033012086,
+    "g": 0.03234492262378899,
+    "r": 0.03175746526398401,
+    "i": 0.040749426859851244,
+    "z": 0.03489868710121766,
+    "redshift": 0.7579049796456965
+  },
+  "sample_predictions": [
+    {
+      "actual": "QSO",
+      "predicted": "QSO",
+      "confidence": 0.6310881204232044,
+      "redshift": 2.0208333665416753
+    },
+    {
+      "actual": "GALAXY",
+      "predicted": "QSO",
+      "confidence": 0.4695245750223714,
+      "redshift": 1.6556308498337524
+    },
+    {
+      "actual": "STAR",
+      "predicted": "STAR",
+      "confidence": 0.7943998952113017,
+      "redshift": 0.04585286462611991
+    },
+    {
+      "actual": "STAR",
+      "predicted": "STAR",
+      "confidence": 0.9511503018590852,
+      "redshift": 0.058121702197488585
+    },
+    {
+      "actual": "GALAXY",
+      "predicted": "GALAXY",
+      "confidence": 0.7953634151468778,
+      "redshift": 0.20823840108936678
+    },
+    {
+      "actual": "STAR",
+      "predicted": "STAR",
+      "confidence": 0.8953615145208086,
+      "redshift": 0.06640463811985639
+    },
+    {
+      "actual": "QSO",
+      "predicted": "QSO",
+      "confidence": 0.5594591851198721,
+      "redshift": 0.7676466591912166
+    },
+    {
+      "actual": "STAR",
+      "predicted": "STAR",
+      "confidence": 0.8361543404774051,
+      "redshift": 0.07876391170417497
+    },
+    {
+      "actual": "QSO",
+      "predicted": "QSO",
+      "confidence": 0.6805069132823672,
+      "redshift": 1.8020124234747763
+    },
+    {
+      "actual": "GALAXY",
+      "predicted": "GALAXY",
+      "confidence": 0.7152822396154963,
+      "redshift": 0.21552625912088236
+    }
+  ],
+  "note": "Model uses regularization to prevent overfitting. The accuracy gap indicates how well the model generalizes.",
+  "generated_date": "2026-03-09T16:29:40.179947"
+}

@@ -1,0 +1,350 @@
+// Load and display the ML results
+async function loadResults() {
+    try {
+        const response = await fetch('../results/results.json?t=' + Date.now());
+        if (!response.ok) {
+            throw new Error('Failed to load results. Please run analysis.py first.');
+        }
+        const data = await response.json();
+        
+        // Update last updated time
+        document.getElementById('last-updated').innerHTML = 
+            `Last updated: ${new Date(data.generated_date).toLocaleString()}`;
+        
+        // Display project info
+        displayProjectInfo(data.project_info);
+        
+        // Display performance metrics
+        displayPerformance(data.performance, data.model_info);
+        
+        // Create charts
+        createClassDistributionChart(data.project_info.class_counts);
+        createFeatureImportanceChart(data.feature_importance);
+        createConfusionMatrix(data.performance.confusion_matrix, data.project_info.classes);
+        
+        // Display sample predictions
+        displaySamplePredictions(data.sample_predictions);
+        
+    } catch (error) {
+        console.error('Error loading results:', error);
+        document.querySelector('.stats-grid').innerHTML = 
+            '<div class="stat-card error">❌ Error loading data. Please run the analysis first.</div>';
+    }
+}
+
+function displayProjectInfo(info) {
+    const container = document.getElementById('stats-container');
+    container.innerHTML = '';
+    
+    const statsData = [
+        { label: 'Total Objects', value: info.dataset_size, icon: '🌌' },
+        { label: 'Features Used', value: info.features.length, icon: '📊' },
+        { label: 'Classes', value: info.classes.length, icon: '🎯' },
+        { label: 'Stars', value: info.class_counts.STAR || 0, icon: '⭐' },
+        { label: 'Galaxies', value: info.class_counts.GALAXY || 0, icon: '🌠' },
+        { label: 'Quasars', value: info.class_counts.QSO || 0, icon: '💫' }
+    ];
+    
+    statsData.forEach(stat => {
+        const card = document.createElement('div');
+        card.className = 'stat-card';
+        card.innerHTML = `
+            <h3>${stat.icon} ${stat.label}</h3>
+            <div class="stat-value">${stat.value.toLocaleString()}</div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function displayPerformance(performance, modelInfo) {
+    const container = document.getElementById('performance-stats');
+    if (!container) return;
+    
+    container.innerHTML = `
+        <div class="performance-grid">
+            <div class="metric-card">
+                <h4>�� Model</h4>
+                <div class="metric-value">${modelInfo.algorithm}</div>
+                <div class="metric-label">n_estimators: ${modelInfo.n_estimators}</div>
+            </div>
+            <div class="metric-card">
+                <h4>�� Training Accuracy</h4>
+                <div class="metric-value">${(performance.training_accuracy * 100).toFixed(2)}%</div>
+            </div>
+            <div class="metric-card">
+                <h4>🎲 Testing Accuracy</h4>
+                <div class="metric-value">${(performance.testing_accuracy * 100).toFixed(2)}%</div>
+            </div>
+        </div>
+    `;
+}
+
+function createClassDistributionChart(classCounts) {
+    const ctx = document.getElementById('object-chart').getContext('2d');
+    
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: Object.keys(classCounts),
+            datasets: [{
+                data: Object.values(classCounts),
+                backgroundColor: [
+                    '#FFD700', // Gold for STAR
+                    '#4169E1', // Royal Blue for GALAXY
+                    '#9400D3'  // Dark Violet for QSO
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#e0e0e0',
+                        font: { size: 12 }
+                    }
+                },
+                title: {
+                    display: true,
+                    text: 'Class Distribution in Dataset',
+                    color: '#e0e0e0'
+                }
+            },
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
+        }
+    });
+}
+
+function createFeatureImportanceChart(importance) {
+    const ctx = document.getElementById('constellation-chart').getContext('2d');
+    
+    // Sort features by importance
+    const sorted = Object.entries(importance)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 10); // Top 10 features
+    
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: sorted.map(item => item[0]),
+            datasets: [{
+                label: 'Feature Importance',
+                data: sorted.map(item => item[1]),
+                backgroundColor: '#4ECDC4',
+                borderRadius: 5
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                title: {
+                    display: true,
+                    text: 'Top 10 Feature Importances',
+                    color: '#e0e0e0'
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: { color: 'rgba(255,255,255,0.1)' },
+                    ticks: { color: '#e0e0e0' }
+                },
+                x: {
+                    grid: { display: false },
+                    ticks: { 
+                        color: '#e0e0e0',
+                        maxRotation: 45,
+                        minRotation: 45
+                    }
+                }
+            }
+        }
+    });
+}
+
+function createConfusionMatrix(cm, classes) {
+    // Create a canvas for confusion matrix if it doesn't exist
+    let canvas = document.getElementById('confusion-matrix');
+    if (!canvas) {
+        const container = document.querySelector('.charts-container');
+        const newCard = document.createElement('div');
+        newCard.className = 'chart-card';
+        newCard.innerHTML = `
+            <h2>🔢 Confusion Matrix</h2>
+            <div class="chart-wrapper">
+                <canvas id="confusion-matrix"></canvas>
+            </div>
+        `;
+        container.appendChild(newCard);
+        canvas = document.getElementById('confusion-matrix');
+    }
+    
+    const ctx = canvas.getContext('2d');
+    
+    // Prepare data for confusion matrix heatmap
+    const data = {
+        labels: classes,
+        datasets: [{
+            data: cm.flat(),
+            backgroundColor: ctx => {
+                const value = ctx.dataset.data[ctx.dataIndex];
+                const max = Math.max(...cm.flat());
+                const alpha = value / max;
+                return `rgba(66, 133, 244, ${alpha})`;
+            }
+        }]
+    };
+    
+    // Custom plugin for confusion matrix
+    const confusionMatrixPlugin = {
+        id: 'confusionMatrix',
+        afterDatasetsDraw(chart) {
+            const { ctx, data, chartArea: { top, bottom, left, right }, scales: { x, y } } = chart;
+            
+            ctx.save();
+            ctx.font = '12px Inter';
+            ctx.fillStyle = '#e0e0e0';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // Draw values in cells
+            for (let i = 0; i < classes.length; i++) {
+                for (let j = 0; j < classes.length; j++) {
+                    const value = cm[i][j];
+                    const xPos = x.getPixelForValue(j) + (x.getPixelForValue(1) - x.getPixelForValue(0)) / 2;
+                    const yPos = y.getPixelForValue(i) + (y.getPixelForValue(0) - y.getPixelForValue(1)) / 2;
+                    
+                    ctx.fillStyle = value > Math.max(...cm.flat()) / 2 ? '#000' : '#fff';
+                    ctx.fillText(value, xPos, yPos);
+                }
+            }
+            
+            ctx.restore();
+        }
+    };
+    
+    new Chart(ctx, {
+        type: 'matrix',
+        data: {
+            datasets: [{
+                data: cm.flat().map((value, index) => ({
+                    x: index % classes.length,
+                    y: Math.floor(index / classes.length),
+                    v: value
+                })),
+                backgroundColor(ctx) {
+                    const value = ctx.dataset.data[ctx.dataIndex].v;
+                    const max = Math.max(...cm.flat());
+                    const alpha = value / max;
+                    return `rgba(66, 133, 244, ${alpha})`;
+                },
+                width: ({ chart }) => (chart.chartArea.width / classes.length) * 0.8,
+                height: ({ chart }) => (chart.chartArea.height / classes.length) * 0.8
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => {
+                            const x = classes[ctx.raw.x];
+                            const y = classes[ctx.raw.y];
+                            return `${y} predicted as ${x}: ${ctx.raw.v}`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    type: 'category',
+                    labels: classes,
+                    position: 'bottom',
+                    ticks: { color: '#e0e0e0' },
+                    grid: { display: false }
+                },
+                y: {
+                    type: 'category',
+                    labels: classes,
+                    position: 'left',
+                    ticks: { color: '#e0e0e0' },
+                    grid: { display: false }
+                }
+            }
+        },
+        plugins: [confusionMatrixPlugin]
+    });
+}
+
+function displaySamplePredictions(samples) {
+    const container = document.getElementById('sample-predictions');
+    if (!container) return;
+    
+    let html = '<div class="predictions-grid">';
+    samples.forEach((sample, index) => {
+        const isCorrect = sample.actual === sample.predicted;
+        html += `
+            <div class="prediction-card ${isCorrect ? 'correct' : 'incorrect'}">
+                <div class="prediction-header">
+                    <span class="sample-id">Sample #${index + 1}</span>
+                    <span class="confidence">${(sample.confidence * 100).toFixed(1)}% confident</span>
+                </div>
+                <div class="prediction-result">
+                    <span class="actual">Actual: ${sample.actual}</span>
+                    <span class="arrow">→</span>
+                    <span class="predicted ${isCorrect ? 'correct' : 'incorrect'}">${sample.predicted}</span>
+                </div>
+                <div class="prediction-features">
+                    <small>redshift: ${sample.features.redshift.toFixed(4)}</small>
+                </div>
+            </div>
+        `;
+    });
+    html += '</div>';
+    
+    container.innerHTML = html;
+}
+
+// Create additional section for sample predictions
+function addSamplePredictionsSection() {
+    const container = document.querySelector('.recent-discoveries');
+    const newSection = document.createElement('div');
+    newSection.className = 'sample-predictions';
+    newSection.innerHTML = `
+        <h2>🎲 Sample Predictions</h2>
+        <div id="sample-predictions" class="predictions-container"></div>
+    `;
+    container.parentNode.insertBefore(newSection, container.nextSibling);
+}
+
+// Add performance section
+function addPerformanceSection() {
+    const container = document.querySelector('.insights-container');
+    const newCard = document.createElement('div');
+    newCard.className = 'insight-card';
+    newCard.innerHTML = `
+        <h3>⚡ Model Performance</h3>
+        <div id="performance-stats" class="performance-container"></div>
+    `;
+    container.appendChild(newCard);
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    addPerformanceSection();
+    addSamplePredictionsSection();
+    loadResults();
+});
+
+// Auto-refresh every 60 seconds
+setInterval(loadResults, 60000);

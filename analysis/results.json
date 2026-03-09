@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "name": "SDSS SkyServer Astronomical Classification",
+    "dataset_size": 1000,
+    "features": [
+      "ra",
+      "dec",
+      "u",
+      "g",
+      "r",
+      "i",
+      "z",
+      "redshift"
+    ],
+    "classes": [
+      "GALAXY",
+      "QSO",
+      "STAR"
+    ],
+    "class_counts": {
+      "STAR": 535,
+      "GALAXY": 295,
+      "QSO": 170
+    }
+  },
+  "performance": {
+    "testing_accuracy": 1.0
+  },
+  "feature_importance": {
+    "ra": 0.034670394597544174,
+    "dec": 0.026287145259190788,
+    "u": 0.031042846560891957,
+    "g": 0.02794844858066773,
+    "r": 0.029744614698402613,
+    "i": 0.028837163669669617,
+    "z": 0.027391629043481105,
+    "redshift": 0.7940777575901521
+  },
+  "generated_date": "2026-03-09T16:16:56.907402"
+}

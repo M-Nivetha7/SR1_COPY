@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #0a0f1e; color: white; }
+        .success { color: #4ECDC4; }
+        .error { color: #FF6B6B; }
+    </style>
+</head>
+<body>
+    <h1>Space Astronomy ML - Simple Test</h1>
+    <p class="success">✅ Server is working!</p>
+    
+    <h2>Debug Information:</h2>
+    <div id="info"></div>
+    
+    <script>
+        const info = document.getElementById('info');
+        
+        // Check multiple paths for results.json
+        const paths = [
+            '../results/results.json',
+            'results.json',
+            '/results/results.json'
+        ];
+        
+        paths.forEach(path => {
+            fetch(path)
+                .then(response => {
+                    if (response.ok) {
+                        info.innerHTML += `<p class="success">✅ Found results.json at: ${path}</p>`;
+                        return response.json();
+                    } else {
+                        info.innerHTML += `<p class="error">❌ Not found at: ${path}</p>`;
+                    }
+                })
+                .then(data => {
+                    if (data) {
+                        info.innerHTML += `<p>Dataset size: ${data.project_info.dataset_size}</p>`;
+                    }
+                })
+                .catch(() => {
+                    info.innerHTML += `<p class="error">❌ Error accessing: ${path}</p>`;
+                });
+        });
+    </script>
+</body>
+</html>

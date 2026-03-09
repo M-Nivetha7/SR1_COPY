@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SDSS SkyServer - ML Classification Results</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="stars"></div>
+    <div class="container">
+        <header class="main-header">
+            <h1 class="glowing-text">🌌 SDSS SkyServer ML Classification</h1>
+            <p class="subtitle">Stars, Galaxies & Quasars Classification using Random Forest</p>
+            <div id="last-updated" class="last-updated"></div>
+        </header>
+        
+        <div class="stats-grid" id="stats-container">
+            <div class="stat-card loading">Loading statistics...</div>
+        </div>
+        
+        <div class="insights-container">
+            <div class="insight-card glass-effect">
+                <h3>🔭 Project Overview</h3>
+                <div class="insights-content">
+                    <p>Classification of celestial objects from the Sloan Digital Sky Survey (SDSS) dataset using Random Forest Classifier.</p>
+                    <p>The model achieves ~99% accuracy because astronomical features (redshift and spectral bands) naturally separate different object types.</p>
+                </div>
+            </div>
+            <div class="insight-card glass-effect">
+                <h3>⚡ Key Insight</h3>
+                <div class="insights-content">
+                    <p>High accuracy is expected in astronomical classification due to clear separation of features like redshift and photometric bands (u,g,r,i,z) between stars, galaxies, and quasars.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="performance-section glass-effect">
+            <h2>⚡ Model Performance</h2>
+            <div id="performance-stats" class="performance-container"></div>
+        </div>
+        
+        <div class="charts-grid">
+            <div class="chart-card glass-effect">
+                <h2>📊 Class Distribution</h2>
+                <div class="chart-wrapper">
+                    <canvas id="object-chart"></canvas>
+                </div>
+            </div>
+            <div class="chart-card glass-effect">
+                <h2>🔍 Feature Importance</h2>
+                <div class="chart-wrapper">
+                    <canvas id="constellation-chart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <div class="report-section glass-effect">
+            <h2>📋 Classification Report</h2>
+            <div id="classification-report" class="report-container">
+                <div class="loading">Loading classification report...</div>
+            </div>
+        </div>
+        
+        <div class="predictions-section glass-effect">
+            <h2>🎲 Sample Predictions</h2>
+            <div id="sample-predictions" class="predictions-container">
+                <div class="loading">Loading sample predictions...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
